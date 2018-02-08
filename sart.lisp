@@ -291,6 +291,23 @@
 	-	state		nil
 )
 
+(p do-not-respond-if-Q
+	=goal>
+		isa			subgoal
+		step		make-response
+	=retrieval>
+		isa			srmapping
+		stimulus	=letter
+    hand nil
+==>
+	-goal>
+	-visual-location>
+	-visual>
+	+retrieval>
+		isa			goal
+	-	state		nil
+)
+
 (goal-focus startgoal)
 
 )
