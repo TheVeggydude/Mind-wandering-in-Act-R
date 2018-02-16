@@ -10,7 +10,7 @@
 
 
 # Read in the data
-data_path <- "~/output/" # Change to the location of your output folder
+data_path <- "C:/Users/robbi/Desktop/ACT-R Standalone Environment/output/" # Change to the location of your output folder
 
 # List of the data files
 behfiles <- list.files(path = data_path, pattern=".csv", full.names = TRUE)
@@ -56,7 +56,7 @@ idx <- 0L
 
 
 for(i in 1:length(lines)) {
-
+  
   # Read a single line
   line <- lines[i]
   
@@ -66,15 +66,40 @@ for(i in 1:length(lines)) {
     print(participant)
   }
   
+  if(str_detect(line, "^\\s+\\d+\\D\\d+")) {
+    time <- as.numeric(str_extract(line,"\\d+\\D\\d+"))
+  }
+  
+  if(str_detect(line,"Chunk ATTEND has an activation of: \\d+\\D\\d+")) {
+    activation <- as.numeric(str_extract(line,"\\d+\\D\\d+"))
+    set(activations, idx , j = 1:3, value = list(participant, time, activation))
+    idx <- idx + 1L
+  }
+  
+    
   # Check whether the line contains the activation of the ATTEND chunk, and then store the value
   # Hints:
   #   - you can use str_detect() and str_extract(). See http://stringr.tidyverse.org/
   #   - use regular expressions to describe string patterns. A good resource is https://regexr.com/ 
   #   - you will also need to keep track of the time, which is given at the start of many (but not all!) lines in the trace file. 
   #   - you can add a line to the activations data.table using set(activations, idx, j = 1:3, value = list(participant, time, activation)). See ?set for more information.
-
+  
 }
+activations <- activations[which(activations$participant != 0)] #trim the empty rows
+activations$time <- (as.integer(activations$time)+1) #bin the data in whole seconds
 
+
+averages <- vector()
+for(i in 1:500) {
+  averages[i] <- mean(activations$activation[which(activations$time == i)])
+}
+plot(averages,xlab="time", ylab="average activation") #simple plot
+time <- 1:500
+
+#smoothed plot
+ggplot(as.data.frame(averages), aes(x = time, y = averages)) +
+  geom_point() +
+  geom_smooth()
 
 # You should now have a data.table containing each observation of the activation of ATTEND for all 25 model runs, along with the time of the observation.
 # Since the observations were not all made at exactly the same time for each participant, and the number of observations differs between participants,
