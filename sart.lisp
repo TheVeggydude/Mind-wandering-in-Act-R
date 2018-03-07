@@ -171,6 +171,7 @@
 (chunk-type goal state)
 (chunk-type subgoal step)
 (chunk-type srmapping stimulus hand)
+(chunk-type memory content)
 
 (add-dm
 	(start isa chunk)
@@ -178,13 +179,28 @@
 	(withhold-on-Q isa srmapping stimulus "Q" hand nil)
 	(startgoal isa beginning label start)
 	(attend isa goal state attend)
+  (wander isa goal state wander)
 	(identify isa subgoal step identify)
 	(get-response isa subgoal step get-response)
 	(make-response isa subgoal step make-response)
+  (I-like-dogs isa chunk) (dog isa memory content I-like-dogs)
+  (I-dont-like-cats isa chunk) (cat isa memory content I-dont-like-cats)
+  (I-like-books isa chunk) (reading isa memory content I-like-books)
+  (I-want-to-see-a-film isa chunk) (film isa memory content I-want-to-see-a-film)
+  (I-miss-my-friends isa chunk) (friends isa memory content I-miss-my-friends)
+  (I-need-new-shoes isa chunk) (shoes isa memory content I-need-new-shoes)
+  (I-need-to-feed-my-goldfish isa chunk) (pet isa memory content I-need-to-feed-my-goldfish)
+  (I-want-chocolate isa chunk) (snacks isa memory content I-want-chocolate)
+  (I-feel-tired isa chunk) (sleep isa memory content I-feel-tired)
+  (I-feel-hungry isa chunk) (food isa memory content I-feel-hungry)
+  (I-feel-thirsty isa chunk) (drink isa memory content I-feel-thirsty)
+  (I-want-vacation isa chunk) (vacation isa memory content I-want-vacation)
+  (I-should-be-working isa chunk) (work isa memory content I-should-be-working)
 )
 
 (set-base-levels
 	(attend			10000	-10000)
+  (wander    10000  -10000)
 	(press-on-O		10000	-10000)
 	(withhold-on-Q	10000	-10000)
 )
@@ -207,12 +223,12 @@
 (p check-current-goal
 	=retrieval>
 		isa			goal
-		state		attend
+  	state		attend
 	?retrieval>
 		state		free
 	-	state		error
 	?goal>
-		buffer empty
+  buffer empty
 	?visual>
 	-	scene-change T
 ==>
@@ -221,7 +237,7 @@
 	-retrieval>
 	+retrieval>
 		isa			goal
-	-	state		nil
+	- state		nil
 )
 
 (p identify-stimulus
@@ -306,6 +322,33 @@
 	+retrieval>
 		isa			goal
 	-	state		nil
+)
+
+;; Mind-wandering
+
+(p wander
+  ?goal>
+		buffer		empty
+  =retrieval>
+    - state attend
+==>
+	=retrieval>
+		content		nil ; clear retrieval buffer without strengthening chunk
+  +retrieval>
+    isa memory
+    - content nil
+  
+)
+
+(p get-back-to-work
+  =retrieval>
+    isa memory
+    content I-should-be-working
+==>
+  +goal>
+	  isa			beginning
+		label		start
+  -retrieval>
 )
 
 (goal-focus startgoal)
