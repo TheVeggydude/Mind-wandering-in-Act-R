@@ -163,7 +163,7 @@
 	:show-focus t ; show where the model is looking
 	:esc t ; enable sub-symbolic level
 	:rt -5 ; retrieval threshold
-	:bll 0.5 ; base-level learning
+	:bll 0.9 ; base-level learning
 	:ans 0.2 ;activation noise
 )
 
@@ -186,8 +186,8 @@
   (I-like-dogs isa chunk) (dog isa memory content I-like-dogs)
   (I-dont-like-cats isa chunk) (cat isa memory content I-dont-like-cats)
   (I-like-books isa chunk) (reading isa memory content I-like-books)
-  ;;(I-want-to-see-a-film isa chunk) (film isa memory content I-want-to-see-a-film)
-  ;;(I-miss-my-friends isa chunk) (friends isa memory content I-miss-my-friends)
+  (I-want-to-see-a-film isa chunk) (film isa memory content I-want-to-see-a-film)
+  (I-miss-my-friends isa chunk) (friends isa memory content I-miss-my-friends)
   ;;(I-need-new-shoes isa chunk) (shoes isa memory content I-need-new-shoes)
   ;;(I-need-to-feed-my-goldfish isa chunk) (pet isa memory content I-need-to-feed-my-goldfish)
   ;;(I-want-chocolate isa chunk) (snacks isa memory content I-want-chocolate)
@@ -203,18 +203,18 @@
   (wander    10000  -10000)
 	(press-on-O		10000	-10000)
 	(withhold-on-Q	10000	-10000)
-	(I-like-dogs 10000	-10000)
+  (I-like-dogs 10000	-10000)
   (I-dont-like-cats 10000	-10000)
   (I-like-books 10000	-10000) 
-  ;;(I-want-to-see-a-film 10000	-10000) 
-  ;;(I-miss-my-friends 10000	-10000) 
-  ;;(I-need-new-shoes 10000	-10000) 
-  ;;(I-need-to-feed-my-goldfish 10000	-10000) 
-  ;;(I-want-chocolate 10000	-10000) 
-  ;;(I-feel-tired 10000	-10000 )
-  ;;(I-feel-hungry 10000	-10000) 
-  ;;(I-feel-thirsty 10000	-10000) 
-  ;;(I-want-vacation 10000	-10000) 
+  (I-want-to-see-a-film 10000	-10000) 
+  (I-miss-my-friends 10000	-10000) 
+  ;;(I-need-new-shoes 100	-100) 
+  ;;(I-need-to-feed-my-goldfish 100	-100) 
+  ;;(I-want-chocolate 100	-100) 
+  ;;(I-feel-tired 100	-100 )
+  ;;(I-feel-hungry 100	-100) 
+  ;;(I-feel-thirsty 100	-100) 
+  ;;(I-want-vacation 100	-100) 
   (I-should-be-working 10000	-10000)
 )
 
@@ -309,7 +309,7 @@
 		state		free
 ==>
 	+manual>
-		isa			punch
+		isa		punch
 		hand		=hand
 		finger		index
 	-goal>
@@ -341,27 +341,39 @@
 
 (p wander
   ?goal>
-		buffer		empty
+  buffer		empty
   =retrieval>
     - state attend
+  ?visual>
+  state free
 ==>
 	=retrieval>
-		content		nil ; clear retrieval buffer without strengthening chunk
-  +retrieval>
+   content	nil ; clear retrieval buffer without strengthening chunk
+
+  -visual>
+  -visual-location>   
+
++retrieval>
     isa memory
     - content nil
-  
 )
 
 (p get-back-to-work
   =retrieval>
     isa memory
     content I-should-be-working
+  ?visual>
+    state free
 ==>
   +goal>
 	  isa			beginning
 		label		start
-  -retrieval>
+  ;;=retrieval>
+  ;;	content		nil ; clear retrieval buffer without strengthening chunk
+  
+-retrieval>
+  +visual>
+  isa			clear-scene-change
 )
 
 (goal-focus startgoal)
